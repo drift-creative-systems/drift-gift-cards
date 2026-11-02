@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Gateway isn't the active gateway, since the filter it hooks is simply
  * never fired in that case.
  */
-class BGCP_Stripe {
+class Drift_Gift_Cards_Stripe {
 
 	public static function init() {
 		add_filter( 'wc_stripe_generate_payment_request', array( __CLASS__, 'maybe_prefix_description' ), 10, 2 );
@@ -29,7 +29,7 @@ class BGCP_Stripe {
 
 	private static function order_has_gift_card( $order ) {
 		foreach ( $order->get_items() as $item ) {
-			if ( '' !== $item->get_meta( '_bgcp_amount', true ) ) {
+			if ( '' !== $item->get_meta( '_drift_gift_cards_amount', true ) ) {
 				return true;
 			}
 		}

@@ -16,7 +16,7 @@
 		return;
 	}
 
-	var settings = window.bgcpCheckout || {};
+	var settings = window.driftGiftCardsCheckout || {};
 	var i18n     = settings.i18n || {};
 
 	function request( path, code ) {
@@ -116,18 +116,18 @@
 
 		return el(
 			'div',
-			{ className: 'bgcp-checkout-field wc-block-components-panel' },
+			{ className: 'drift-gift-cards-checkout-field wc-block-components-panel' },
 			el( 'h3', {}, i18n.label || 'Have a gift card?' ),
 			applied.map( function ( card ) {
 				return el(
 					'div',
-					{ className: 'bgcp-applied-card', key: card.code },
+					{ className: 'drift-gift-cards-applied-card', key: card.code },
 					el( 'span', {}, card.code + ' — ' + card.balance ),
 					el(
 						'button',
 						{
 							type: 'button',
-							className: 'bgcp-remove-btn',
+							className: 'drift-gift-cards-remove-btn',
 							onClick: function () {
 								remove( card.code );
 							},
@@ -138,7 +138,7 @@
 			} ),
 			el(
 				'div',
-				{ className: 'bgcp-field-row' },
+				{ className: 'drift-gift-cards-field-row' },
 				el( 'input', {
 					type: 'text',
 					value: code,
@@ -157,11 +157,11 @@
 					busy ? ( i18n.applying || 'Applying…' ) : ( i18n.apply || 'Apply' )
 				)
 			),
-			error ? el( 'p', { className: 'bgcp-error' }, error ) : null
+			error ? el( 'p', { className: 'drift-gift-cards-error' }, error ) : null
 		);
 	}
 
-	registerPlugin( 'bgcp-gift-card-field', {
+	registerPlugin( 'drift-gift-cards-gift-card-field', {
 		render: function () {
 			return el(
 				ExperimentalOrderMeta,

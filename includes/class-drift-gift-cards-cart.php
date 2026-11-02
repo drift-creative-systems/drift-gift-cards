@@ -7,10 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Applying/removing gift cards at Cart & Checkout.
  *
  * The redeem field itself lives in the Blocks checkout sidebar (see
- * BGCP_Blocks_Integration + assets/js/checkout-block.js), driven via the
- * REST routes in BGCP_REST. This class is the shared engine underneath
+ * Drift_Gift_Cards_Blocks_Integration + assets/js/checkout-block.js), driven via the
+ * REST routes in Drift_Gift_Cards_REST. This class is the shared engine underneath
  * both: session storage of applied codes, the cart-fee calculation, and
- * the atomic balance deduction — BGCP_REST just calls the static methods
+ * the atomic balance deduction — Drift_Gift_Cards_REST just calls the static methods
  * below rather than duplicating any of this.
  *
  * The actual balance deduction happens once, atomically, at order-creation
@@ -18,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * across two abandoned carts, and to guarantee nothing is deducted unless
  * an order actually gets created.
  */
-class BGCP_Cart {
+class Drift_Gift_Cards_Cart {
 
-	const SESSION_KEY = 'bgcp_applied_codes';
+	const SESSION_KEY = 'drift_gift_cards_applied_codes';
 
 	private static $instance = null;
 
@@ -75,25 +75,25 @@ class BGCP_Cart {
 	 */
 	public static function apply_code( $code ) {
 		$code = sanitize_text_field( wp_unslash( (string) $code ) );
-		$card = BGCP_DB::get_card_by_code( $code );
+		$card = Drift_Gift_Cards_DB::get_card_by_code( $code );
 
 		if ( ! $card ) {
-			return new WP_Error( 'bgcp_not_found', __( "We couldn't find a gift card with that code.", 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_not_found', __( "We couldn't find a gift card with that code.", 'drift-gift-cards' ) );
 		}
 		if ( 'active' !== $card->status ) {
-			return new WP_Error( 'bgcp_inactive', __( 'This gift card is no longer active.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_inactive', __( 'This gift card is no longer active.', 'drift-gift-cards' ) );
 		}
 		if ( $card->expires_at && strtotime( $card->expires_at ) < time() ) {
-			return new WP_Error( 'bgcp_expired', __( 'This gift card has expired.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_expired', __( 'This gift card has expired.', 'drift-gift-cards' ) );
 		}
 		if ( (float) $card->balance <= 0 ) {
-			return new WP_Error( 'bgcp_empty', __( 'This gift card has no remaining balance.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_empty', __( 'This gift card has no remaining balance.', 'drift-gift-cards' ) );
 		}
 
 		$applied = self::get_applied();
 		foreach ( $applied as $entry ) {
 			if ( $entry['code'] === $card->code ) {
-				return new WP_Error( 'bgcp_already_applied', __( 'That gift card is already applied.', 'bgcp' ) );
+				return new WP_Error( 'drift_gift_cards_already_applied', __( 'That gift card is already applied.', 'drift-gift-cards' ) );
 			}
 		}
 
@@ -101,7 +101,7 @@ class BGCP_Cart {
 		$usable_amount    = min( (float) $card->balance, $remaining_total );
 
 		if ( $usable_amount <= 0 ) {
-			return new WP_Error( 'bgcp_no_balance_needed', __( 'The order total is already covered.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_no_balance_needed', __( 'The order total is already covered.', 'drift-gift-cards' ) );
 		}
 
 		$applied[] = array(
@@ -142,7 +142,7 @@ class BGCP_Cart {
 	public static function get_applied_cards() {
 		$cards = array();
 		foreach ( self::get_applied() as $entry ) {
-			$card = BGCP_DB::get_card_by_code( $entry['code'] );
+			$card = Drift_Gift_Cards_DB::get_card_by_code( $entry['code'] );
 			if ( $card ) {
 				$cards[] = array(
 					'code'    => $card->code,
@@ -179,7 +179,7 @@ class BGCP_Cart {
 		$remaining    = $cart_total;
 
 		foreach ( $applied as $entry ) {
-			$card = BGCP_DB::get_card_by_code( $entry['code'] );
+			$card = Drift_Gift_Cards_DB::get_card_by_code( $entry['code'] );
 			if ( ! $card || 'active' !== $card->status || (float) $card->balance <= 0 ) {
 				continue;
 			}
@@ -193,7 +193,7 @@ class BGCP_Cart {
 		}
 
 		if ( $total_usable > 0 ) {
-			$cart->add_fee( __( 'Gift Card', 'bgcp' ) . ' (' . implode( ', ', $codes ) . ')', -$total_usable, false );
+			$cart->add_fee( __( 'Gift Card', 'drift-gift-cards' ) . ' (' . implode( ', ', $codes ) . ')', -$total_usable, false );
 		}
 	}
 
@@ -219,18 +219,18 @@ class BGCP_Cart {
 				continue;
 			}
 
-			$result = BGCP_DB::adjust_balance( $entry['code'], -$usable_amount, 'Redeemed at checkout' );
+			$result = Drift_Gift_Cards_DB::adjust_balance( $entry['code'], -$usable_amount, 'Redeemed at checkout' );
 
 			if ( is_wp_error( $result ) ) {
 				// Roll back any codes already deducted for this order before aborting.
 				foreach ( $deducted as $rollback ) {
-					BGCP_DB::adjust_balance( $rollback['code'], $rollback['amount'], 'Rollback — checkout aborted' );
+					Drift_Gift_Cards_DB::adjust_balance( $rollback['code'], $rollback['amount'], 'Rollback — checkout aborted' );
 				}
 				self::clear_applied();
 				throw new Exception(
 					sprintf(
 						/* translators: 1: gift card code, 2: error message */
-						__( 'Gift card %1$s could not be applied: %2$s. Please remove it and try again.', 'bgcp' ),
+						__( 'Gift card %1$s could not be applied: %2$s. Please remove it and try again.', 'drift-gift-cards' ),
 						esc_html( $entry['code'] ),
 						$result->get_error_message()
 					)
@@ -245,8 +245,8 @@ class BGCP_Cart {
 		}
 
 		if ( ! empty( $deducted ) ) {
-			$order->update_meta_data( '_bgcp_redeemed_codes', wp_json_encode( $deducted ) );
-			$order->update_meta_data( '_bgcp_redeemed_amount', array_sum( wp_list_pluck( $deducted, 'amount' ) ) );
+			$order->update_meta_data( '_drift_gift_cards_redeemed_codes', wp_json_encode( $deducted ) );
+			$order->update_meta_data( '_drift_gift_cards_redeemed_amount', array_sum( wp_list_pluck( $deducted, 'amount' ) ) );
 		}
 	}
 

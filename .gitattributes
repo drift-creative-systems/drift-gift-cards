@@ -1,0 +1,6 @@
+# Keep internal/dev-only files out of `git archive` zips.
+/.gitattributes  export-ignore
+/.gitignore      export-ignore
+/.github         export-ignore
+/CLAUDE.md       export-ignore
+/tests           export-ignore

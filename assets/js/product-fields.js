@@ -2,35 +2,35 @@
 	'use strict';
 
 	$( function () {
-		var $select = $( '#bgcp_amount' );
+		var $select = $( '#drift_gift_cards_amount' );
 		if ( ! $select.length ) {
 			return;
 		}
 
-		var $customRow   = $( '.bgcp-custom-amount-row' );
-		var $customInput = $( '#bgcp_amount_custom' );
+		var $customRow   = $( '.drift-gift-cards-custom-amount-row' );
+		var $customInput = $( '#drift_gift_cards_amount_custom' );
 
 		$select.on( 'change', function () {
 			if ( 'custom' === $select.val() ) {
 				$customRow.show();
-				$customInput.attr( 'name', 'bgcp_amount' );
+				$customInput.attr( 'name', 'drift_gift_cards_amount' );
 				$select.removeAttr( 'name' );
 			} else {
 				$customRow.hide();
 				$customInput.removeAttr( 'name' );
-				$select.attr( 'name', 'bgcp_amount' );
+				$select.attr( 'name', 'drift_gift_cards_amount' );
 			}
 		} );
 	} );
 
 	$( function () {
-		var $hardCopy    = $( '#bgcp_hard_copy' );
+		var $hardCopy    = $( '#drift_gift_cards_hard_copy' );
 		if ( ! $hardCopy.length ) {
 			return;
 		}
 
-		var $addressBox  = $( '.bgcp-hard-copy-address' );
-		var $requiredFields = $addressBox.find( '#bgcp_ship_name, #bgcp_ship_address_1, #bgcp_ship_city, #bgcp_ship_postcode, #bgcp_ship_country' );
+		var $addressBox  = $( '.drift-gift-cards-hard-copy-address' );
+		var $requiredFields = $addressBox.find( '#drift_gift_cards_ship_name, #drift_gift_cards_ship_address_1, #drift_gift_cards_ship_city, #drift_gift_cards_ship_postcode, #drift_gift_cards_ship_country' );
 
 		$hardCopy.on( 'change', function () {
 			if ( $hardCopy.is( ':checked' ) ) {

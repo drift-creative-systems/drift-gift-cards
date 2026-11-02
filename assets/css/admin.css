@@ -1,14 +1,38 @@
 /**
- * Gift cards admin screens (Products → Gift Card Codes / Gift Card Settings).
- * Layered on bonsai-admin-ui.css, which supplies the header, cards, form
- * controls, buttons and badges. Enqueued on those two screens only.
+ * Drift: Gift Cards admin screens (Products → Gift Card Codes / Gift Card
+ * Settings). Layered on drift-admin-ui.css, which supplies the header, cards,
+ * form controls, buttons and badges. Enqueued on those two screens only.
  */
 
-.bgcp-guide {
+/* Product mark ---------------------------------------------------------- */
+
+.drift-gift-cards-mark {
+	display: inline-flex;
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 14px;
+	color: #000;
+}
+
+.drift-gift-cards-mark__icon {
+	display: inline-flex;
+	flex: 0 0 auto;
+	color: #10b981;
+}
+
+.drift-gift-cards-mark__name {
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+}
+
+/* Screens --------------------------------------------------------------- */
+
+.drift-gift-cards-guide {
 	margin: 0 0 24px;
 }
 
-.bgcp-image-preview img {
+.drift-gift-cards-image-preview img {
 	display: block;
 	max-width: 400px;
 	height: auto;
@@ -18,20 +42,20 @@
 }
 
 /* wp-admin's .button and table-row display rules beat the UA [hidden] rule. */
-.bonsai-ui [hidden] {
+.drift-ui [hidden] {
 	display: none !important;
 }
 
-.bgcp-table-wrap {
+.drift-gift-cards-table-wrap {
 	overflow-x: auto;
 }
 
-.bgcp-table-wrap .widefat {
+.drift-gift-cards-table-wrap .widefat {
 	min-width: 900px;
 }
 
-.bgcp-redeem-row form,
-.bgcp-edit-row form {
+.drift-gift-cards-redeem-row form,
+.drift-gift-cards-edit-row form {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;

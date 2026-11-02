@@ -2,21 +2,21 @@
 	'use strict';
 
 	$( function () {
-		var $form   = $( '#bgcp-balance-form' );
+		var $form   = $( '#drift-gift-cards-balance-form' );
 		if ( ! $form.length ) {
 			return;
 		}
 
-		var $input  = $( '#bgcp-balance-code' );
-		var $result = $( '#bgcp-balance-result' );
-		var i18n    = ( window.bgcpBalance && window.bgcpBalance.i18n ) || {};
+		var $input  = $( '#drift-gift-cards-balance-code' );
+		var $result = $( '#drift-gift-cards-balance-result' );
+		var i18n    = ( window.driftGiftCardsBalance && window.driftGiftCardsBalance.i18n ) || {};
 
 		$form.on( 'submit', function ( e ) {
 			e.preventDefault();
 			$result.text( i18n.checking || 'Checking…' );
 
 			$.ajax( {
-				url: window.bgcpBalance.restUrl,
+				url: window.driftGiftCardsBalance.restUrl,
 				method: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify( { code: $input.val() } ),
