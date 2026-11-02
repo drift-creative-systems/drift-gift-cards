@@ -6,6 +6,7 @@
  * @var float  $min
  * @var float  $max
  * @var float  $hard_copy_fee
+ * @var bool   $hard_copy_enabled
  */
 defined( 'ABSPATH' ) || exit;
 ?>
@@ -79,6 +80,8 @@ defined( 'ABSPATH' ) || exit;
 		<span class="description"><?php esc_html_e( "This message will be included in the gift card email, underneath the recipient's name.", 'drift-gift-cards' ); ?></span>
 	</p>
 
+	<?php if ( ! empty( $hard_copy_enabled ) ) : ?>
+
 	<p class="form-row form-row-wide">
 		<label for="drift_gift_cards_hard_copy">
 			<input type="checkbox" name="drift_gift_cards_hard_copy" id="drift_gift_cards_hard_copy" value="yes" />
@@ -133,5 +136,7 @@ defined( 'ABSPATH' ) || exit;
 		?>
 
 	</div>
+
+	<?php endif; ?>
 
 </div>

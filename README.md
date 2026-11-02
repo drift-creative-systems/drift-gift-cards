@@ -50,6 +50,10 @@ repo (no token needed) and surfaces new versions in the normal wp-admin
 
 ## Printed gift cards
 
+- On by default. To turn it off, untick **Offer a printed gift card by post**
+  under Gift Card Settings → Cards and pricing. That hides the checkbox and
+  address fields on every gift card product, and the server ignores any
+  printed card request while it's off.
 - Ticking "send a printed gift card by post" on the product page reveals a
   postal address block (name, address lines, town/city, postcode, country).
   The address is required server-side once ticked — the same as any other

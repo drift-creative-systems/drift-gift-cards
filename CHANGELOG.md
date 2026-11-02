@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- "Offer a printed gift card by post" setting (Gift Card Settings → Cards and pricing). Untick it to hide the printed card checkbox and postal address fields on gift card products. Also enforced server-side. On by default, so existing sites are unchanged.
+
+### Changed
+- Help text under the gift card product fields is now 14px. `gift-card.css` is now loaded on gift card product pages too.
+
 ## [1.0.0] - 2026-11-02
 
 Rebranded as **Drift: Gift Cards** by Drift Creative Systems, as a clean fork. Features are unchanged. Every stored name is new too, so this plugin doesn't read data written by the 1.x plugin it was forked from (it's a separate product). Entries below 1.0.0 are from that plugin.

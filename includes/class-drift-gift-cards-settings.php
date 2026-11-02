@@ -13,6 +13,7 @@ class Drift_Gift_Cards_Settings {
 	const OPTION_REPORT_EMAILS = 'drift_gift_cards_report_emails';
 	const OPTION_REPORT_FREQUENCIES = 'drift_gift_cards_report_frequencies';
 	const OPTION_HARD_COPY_FEE = 'drift_gift_cards_hard_copy_fee';
+	const OPTION_HARD_COPY_ENABLED = 'drift_gift_cards_hard_copy_enabled';
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
@@ -83,6 +84,15 @@ class Drift_Gift_Cards_Settings {
 	public static function get_hard_copy_fee() {
 		$fee = get_option( self::OPTION_HARD_COPY_FEE, '' );
 		return '' === $fee ? 10.0 : (float) $fee;
+	}
+
+	/**
+	 * Whether customers are offered the "send a printed card by post"
+	 * option on the product page. Defaults to on, so sites that had the
+	 * option before this setting existed keep it until it's switched off.
+	 */
+	public static function is_hard_copy_enabled() {
+		return 'no' !== get_option( self::OPTION_HARD_COPY_ENABLED, 'yes' );
 	}
 
 	/**
@@ -185,6 +195,16 @@ class Drift_Gift_Cards_Settings {
 							</td>
 						</tr>
 						<tr>
+							<th scope="row"><?php esc_html_e( 'Printed cards', 'drift-gift-cards' ); ?></th>
+							<td>
+								<label for="drift_gift_cards_hard_copy_enabled">
+									<input type="checkbox" name="drift_gift_cards_hard_copy_enabled" id="drift_gift_cards_hard_copy_enabled" value="yes" <?php checked( self::is_hard_copy_enabled() ); ?> />
+									<?php esc_html_e( 'Offer a printed gift card by post', 'drift-gift-cards' ); ?>
+								</label>
+								<p class="description"><?php esc_html_e( 'Untick to hide the "send a printed gift card by post" option and postal address fields on gift card products.', 'drift-gift-cards' ); ?></p>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><label for="drift_gift_cards_hard_copy_fee"><?php esc_html_e( 'Printed card fee (£)', 'drift-gift-cards' ); ?></label></th>
 							<td>
 								<input type="number" min="0" step="0.01" name="drift_gift_cards_hard_copy_fee" id="drift_gift_cards_hard_copy_fee" value="<?php echo esc_attr( self::get_hard_copy_fee() ); ?>" />
@@ -241,6 +261,7 @@ class Drift_Gift_Cards_Settings {
 		update_option( self::OPTION_EMAIL_INTRO, isset( $_POST['drift_gift_cards_email_intro'] ) ? sanitize_textarea_field( wp_unslash( $_POST['drift_gift_cards_email_intro'] ) ) : '' );
 		update_option( self::OPTION_EXPIRY_MONTHS, isset( $_POST['drift_gift_cards_default_expiry_months'] ) ? absint( $_POST['drift_gift_cards_default_expiry_months'] ) : 0 );
 		update_option( self::OPTION_HARD_COPY_FEE, isset( $_POST['drift_gift_cards_hard_copy_fee'] ) ? wc_format_decimal( wp_unslash( $_POST['drift_gift_cards_hard_copy_fee'] ) ) : 10.0 );
+		update_option( self::OPTION_HARD_COPY_ENABLED, isset( $_POST['drift_gift_cards_hard_copy_enabled'] ) ? 'yes' : 'no' );
 
 		$report_emails = isset( $_POST['drift_gift_cards_report_emails'] ) ? sanitize_textarea_field( wp_unslash( $_POST['drift_gift_cards_report_emails'] ) ) : '';
 		update_option( self::OPTION_REPORT_EMAILS, $report_emails );

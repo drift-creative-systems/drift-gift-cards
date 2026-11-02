@@ -141,7 +141,8 @@ class Drift_Gift_Cards_Product {
 				'presets'       => $presets,
 				'min'           => $min ?: 5,   // phpcs:ignore
 				'max'           => $max ?: 500, // phpcs:ignore
-				'hard_copy_fee' => Drift_Gift_Cards_Settings::get_hard_copy_fee(),
+				'hard_copy_fee'     => Drift_Gift_Cards_Settings::get_hard_copy_fee(),
+				'hard_copy_enabled' => Drift_Gift_Cards_Settings::is_hard_copy_enabled(),
 			),
 			'',
 			DRIFT_GIFT_CARDS_PATH . 'templates/'
@@ -164,6 +165,8 @@ class Drift_Gift_Cards_Product {
 			DRIFT_GIFT_CARDS_VERSION,
 			true
 		);
+		// Same handle as the shortcode/checkout so the file only loads once per page.
+		wp_enqueue_style( 'drift-gift-cards-checkout-block', DRIFT_GIFT_CARDS_URL . 'assets/css/gift-card.css', array(), DRIFT_GIFT_CARDS_VERSION );
 	}
 
 	/**
@@ -177,7 +180,7 @@ class Drift_Gift_Cards_Product {
 			return $passed;
 		}
 
-		if ( empty( $_POST['drift_gift_cards_hard_copy'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! self::hard_copy_requested() ) {
 			return $passed;
 		}
 
@@ -200,6 +203,16 @@ class Drift_Gift_Cards_Product {
 		return $passed;
 	}
 
+	/**
+	 * True when the customer ticked "send a printed card" and printed cards
+	 * are switched on in Gift Card Settings — checked server-side so a
+	 * hand-crafted POST can't add a printed card while the option is off.
+	 */
+	private static function hard_copy_requested() {
+		return Drift_Gift_Cards_Settings::is_hard_copy_enabled()
+			&& ! empty( $_POST['drift_gift_cards_hard_copy'] ); // phpcs:ignore WordPress.Security.NonceVerification
+	}
+
 	public static function add_cart_item_data( $cart_item_data, $product_id ) {
 		if ( ! self::is_gift_card( $product_id ) ) {
 			return $cart_item_data;
@@ -212,10 +225,10 @@ class Drift_Gift_Cards_Product {
 				'recipient_email' => isset( $_POST['drift_gift_cards_recipient_email'] ) ? sanitize_email( wp_unslash( $_POST['drift_gift_cards_recipient_email'] ) ) : '', // phpcs:ignore
 				'message'         => isset( $_POST['drift_gift_cards_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['drift_gift_cards_message'] ) ) : '', // phpcs:ignore
 				'delivery_date'   => isset( $_POST['drift_gift_cards_delivery_date'] ) ? sanitize_text_field( wp_unslash( $_POST['drift_gift_cards_delivery_date'] ) ) : '', // phpcs:ignore
-				'hard_copy'       => ! empty( $_POST['drift_gift_cards_hard_copy'] ) ? 'yes' : '', // phpcs:ignore
+				'hard_copy'       => self::hard_copy_requested() ? 'yes' : '',
 			);
 
-			if ( ! empty( $_POST['drift_gift_cards_hard_copy'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( self::hard_copy_requested() ) {
 				$cart_item_data['drift_gift_card']['ship_name']      = isset( $_POST['drift_gift_cards_ship_name'] ) ? sanitize_text_field( wp_unslash( $_POST['drift_gift_cards_ship_name'] ) ) : ''; // phpcs:ignore
 				$cart_item_data['drift_gift_card']['ship_address_1'] = isset( $_POST['drift_gift_cards_ship_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['drift_gift_cards_ship_address_1'] ) ) : ''; // phpcs:ignore
 				$cart_item_data['drift_gift_card']['ship_address_2'] = isset( $_POST['drift_gift_cards_ship_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['drift_gift_cards_ship_address_2'] ) ) : ''; // phpcs:ignore
