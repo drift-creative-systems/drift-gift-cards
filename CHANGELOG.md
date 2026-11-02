@@ -5,6 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-02
+
+Rebranded as **Drift: Gift Cards** by Drift Creative Systems, as a clean fork. Features are unchanged. Every stored name is new too, so this plugin doesn't read data written by the 1.x plugin it was forked from (it's a separate product). Entries below 1.0.0 are from that plugin.
+
+### Changed
+- Plugin folder and main file `drift-gift-cards/drift-gift-cards.php`, text domain `drift-gift-cards`.
+- Classes, constants, functions and hooks renamed to the `Drift_Gift_Cards_` / `DRIFT_GIFT_CARDS_` / `drift_gift_cards_` prefix; files to `includes/class-drift-gift-cards-*.php`. Admin-post actions, nonces, CSS classes, element IDs, script handles and JS globals (`driftGiftCardsAdmin`, `driftGiftCardsBalance`, `driftGiftCardsCheckout`) renamed to match.
+- Stored data renamed: DB table `wp_drift_gift_cards`, `drift_gift_cards_*` options, `_drift_gift_cards_*` product and order-item meta, the `drift_gift_cards_applied_codes` session key, cron hooks and the `drift_gift_card` email ID.
+- REST namespace `drift-gift-cards/v1`; balance shortcode `[drift_gift_cards_balance_check]`; admin pages `drift-gift-cards` and `drift-gift-cards-settings`.
+- Admin screens use the Drift admin design system with the Drift monogram and the Gift Cards emerald accent (`#10b981`; `#047857` under white text for AA).
+- Updates come from the public `drift-creative-systems/drift-gift-cards` repo, with no token needed. Release zips are built by `.github/workflows/release.yml`.
+- Composer autoloader has a fixed `DriftGiftCards` suffix so it never clashes with another plugin's.
+
+### Added
+- Admin notice instead of a fatal error when the plugin is installed twice.
+- Copyright and company details (Drift Creative Systems Ltd, company number, registered office) in the wp-admin footer on the plugin's screens, the README and the main file header.
+
 ## [1.2.0] - 2026-09-30
 ### Added
 - "Send a printed gift card by post" option on the product page — ticking it charges a

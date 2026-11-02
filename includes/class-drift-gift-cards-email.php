@@ -12,21 +12,21 @@ if ( ! class_exists( 'WC_Email' ) ) {
  * template system so it inherits the site's header/footer, and can be
  * overridden the normal WC way by copying the templates into the theme.
  */
-class BGCP_Email_Gift_Card extends WC_Email {
+class Drift_Gift_Cards_Email_Gift_Card extends WC_Email {
 
 	public function __construct() {
-		$this->id             = 'bgcp_gift_card';
-		$this->title          = __( 'Gift Card', 'bgcp' );
-		$this->description    = __( 'Sent to the recipient when a gift card is purchased (or on the requested delivery date).', 'bgcp' );
+		$this->id             = 'drift_gift_card';
+		$this->title          = __( 'Gift Card', 'drift-gift-cards' );
+		$this->description    = __( 'Sent to the recipient when a gift card is purchased (or on the requested delivery date).', 'drift-gift-cards' );
 		$this->customer_email = true;
 		$this->template_html  = 'emails/customer-gift-card.php';
 		$this->template_plain = 'emails/plain/customer-gift-card.php';
-		$this->template_base  = BGCP_PLUGIN_DIR . 'templates/';
+		$this->template_base  = DRIFT_GIFT_CARDS_PATH . 'templates/';
 		$this->placeholders   = array(
 			'{gift_card_code}' => '',
 		);
 
-		add_action( 'bgcp_send_gift_card_email', array( $this, 'trigger' ) );
+		add_action( 'drift_gift_cards_send_gift_card_email', array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
@@ -54,11 +54,11 @@ class BGCP_Email_Gift_Card extends WC_Email {
 	}
 
 	public function get_default_subject() {
-		return __( "You've received a Gift Card!", 'bgcp' );
+		return __( "You've received a Gift Card!", 'drift-gift-cards' );
 	}
 
 	public function get_default_heading() {
-		return __( 'Your Gift Card', 'bgcp' );
+		return __( 'Your Gift Card', 'drift-gift-cards' );
 	}
 
 	public function get_content_html() {
@@ -67,8 +67,8 @@ class BGCP_Email_Gift_Card extends WC_Email {
 			array(
 				'card'          => $this->object,
 				'email_heading' => $this->get_heading(),
-				'intro'         => BGCP_Settings::get_email_intro(),
-				'image_url'     => BGCP_Settings::get_image_url( 'large' ),
+				'intro'         => Drift_Gift_Cards_Settings::get_email_intro(),
+				'image_url'     => Drift_Gift_Cards_Settings::get_image_url( 'large' ),
 				'balance_url'   => $this->get_balance_page_url(),
 				'redeem_url'    => $this->get_redeem_url(),
 				'sent_to_admin' => false,
@@ -86,7 +86,7 @@ class BGCP_Email_Gift_Card extends WC_Email {
 			array(
 				'card'          => $this->object,
 				'email_heading' => $this->get_heading(),
-				'intro'         => BGCP_Settings::get_email_intro(),
+				'intro'         => Drift_Gift_Cards_Settings::get_email_intro(),
 				'balance_url'   => $this->get_balance_page_url(),
 				'redeem_url'    => $this->get_redeem_url(),
 				'sent_to_admin' => false,
@@ -99,7 +99,7 @@ class BGCP_Email_Gift_Card extends WC_Email {
 	}
 
 	private function get_balance_page_url() {
-		$page_id = get_option( 'bgcp_balance_page_id' );
+		$page_id = get_option( 'drift_gift_cards_balance_page_id' );
 		return $page_id ? get_permalink( $page_id ) : home_url( '/' );
 	}
 

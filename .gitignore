@@ -8,9 +8,9 @@ Thumbs.db
 *.sublime-*
 
 # Dependencies
-# vendor/ is committed — this is a client-portable, no-build-step plugin;
-# the plugin-update-checker library must ship in the release, same as
-# bonsai-code-injector.
+# vendor/ is committed (update checker ships with the plugin). Build it with
+# `composer install --no-dev` before committing; composer.json fixes the
+# autoloader suffix (DriftGiftCards) so it never clashes with another plugin.
 /node_modules/
 
 # Logs

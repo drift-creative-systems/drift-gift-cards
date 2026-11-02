@@ -8,11 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A plain custom table rather than a CPT — gift cards are high-volume,
  * simple records and don't need post revisions/meta overhead.
  */
-class BGCP_DB {
+class Drift_Gift_Cards_DB {
 
 	public static function table_name() {
 		global $wpdb;
-		return $wpdb->prefix . 'bgcp_gift_cards';
+		return $wpdb->prefix . 'drift_gift_cards';
 	}
 
 	public static function create_table() {
@@ -95,8 +95,8 @@ class BGCP_DB {
 		);
 
 		if ( false === $inserted ) {
-			error_log( 'BGCP: failed to insert gift card — ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			return new WP_Error( 'bgcp_db_error', __( 'Could not create gift card.', 'bgcp' ) );
+			error_log( 'Drift Gift Cards: failed to insert gift card — ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			return new WP_Error( 'drift_gift_cards_db_error', __( 'Could not create gift card.', 'drift-gift-cards' ) );
 		}
 
 		return $data['code'];
@@ -189,20 +189,20 @@ class BGCP_DB {
 			// Nothing matched — work out why, for a useful error message.
 			$card = self::get_card_by_code( $code );
 			if ( ! $card ) {
-				return new WP_Error( 'bgcp_not_found', __( 'Gift card not found.', 'bgcp' ) );
+				return new WP_Error( 'drift_gift_cards_not_found', __( 'Gift card not found.', 'drift-gift-cards' ) );
 			}
 			if ( 'active' !== $card->status ) {
-				return new WP_Error( 'bgcp_inactive', __( 'This gift card is not active.', 'bgcp' ) );
+				return new WP_Error( 'drift_gift_cards_inactive', __( 'This gift card is not active.', 'drift-gift-cards' ) );
 			}
 			if ( $card->expires_at && strtotime( $card->expires_at ) < time() ) {
-				return new WP_Error( 'bgcp_expired', __( 'This gift card has expired.', 'bgcp' ) );
+				return new WP_Error( 'drift_gift_cards_expired', __( 'This gift card has expired.', 'drift-gift-cards' ) );
 			}
-			return new WP_Error( 'bgcp_insufficient', __( 'Insufficient gift card balance.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_insufficient', __( 'Insufficient gift card balance.', 'drift-gift-cards' ) );
 		}
 
 		$card = self::get_card_by_code( $code );
 
-		do_action( 'bgcp_balance_adjusted', $card->id, $delta, $card->balance, $note );
+		do_action( 'drift_gift_cards_balance_adjusted', $card->id, $delta, $card->balance, $note );
 
 		return (float) $card->balance;
 	}
@@ -218,7 +218,7 @@ class BGCP_DB {
 		$card  = self::get_card_by_code( $code );
 
 		if ( ! $card ) {
-			return new WP_Error( 'bgcp_not_found', __( 'Gift card not found.', 'bgcp' ) );
+			return new WP_Error( 'drift_gift_cards_not_found', __( 'Gift card not found.', 'drift-gift-cards' ) );
 		}
 
 		$new_balance = round( max( 0, (float) $new_balance ), 2 );
@@ -235,11 +235,11 @@ class BGCP_DB {
 		);
 
 		if ( false === $updated ) {
-			error_log( 'BGCP: failed to update gift card balance — ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			return new WP_Error( 'bgcp_db_error', __( 'Could not update balance.', 'bgcp' ) );
+			error_log( 'Drift Gift Cards: failed to update gift card balance — ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			return new WP_Error( 'drift_gift_cards_db_error', __( 'Could not update balance.', 'drift-gift-cards' ) );
 		}
 
-		do_action( 'bgcp_balance_adjusted', $card->id, $new_balance - (float) $card->balance, $new_balance, 'manual balance edit' );
+		do_action( 'drift_gift_cards_balance_adjusted', $card->id, $new_balance - (float) $card->balance, $new_balance, 'manual balance edit' );
 
 		return $new_balance;
 	}

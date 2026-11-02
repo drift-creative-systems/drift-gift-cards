@@ -1,0 +1,532 @@
+/**
+ * Drift admin UI – design system for Drift: Gift Cards admin screens.
+ *
+ * Version: 1.0.0
+ *
+ * Copied at 1.0.0 from Drift: Redline; not kept in sync with it.
+ * Only enqueued on this plugin's own screens. admin.css adds the
+ * Gift Cards product mark and screen styles on top.
+ *
+ * Everything is scoped under .drift-ui (the page wrapper) so nothing leaks
+ * into the rest of wp-admin.
+ *
+ * Components:
+ *   .drift-ui                 Page wrapper (add to .wrap). --narrow for single-column settings.
+ *   .drift-ui-header          Logo, title, lead, links; version on the right.
+ *   .drift-ui-card            White panel. __head, __title, __intro, __footer.
+ *   .drift-ui-toggle          Switch-style checkbox (input[type=checkbox]).
+ *   .drift-ui-badge           Status pill. --success, --warning, --error, --neutral.
+ *   .drift-ui-status          Key/value list for diagnostics (dl).
+ *   .drift-ui-actions         Row of buttons.
+ *   .drift-ui-help            Footer/help area.
+ */
+
+/* Tokens --------------------------------------------------------------- */
+
+.drift-ui {
+	--drift-ui-accent: #047857; /* Drift: Gift Cards emerald (#10b981) darkened for AA with white text (5.5:1). */
+	--drift-ui-accent-strong: #065f46; /* Hover fill (7.6:1). */
+	--drift-ui-ink: #000;
+	--drift-ui-text: #1d2327;
+	--drift-ui-muted: #50575e;
+	--drift-ui-line: #d8dcdf;
+	--drift-ui-line-soft: #f0f0f1;
+	--drift-ui-surface: #fff;
+	--drift-ui-subtle: #f6f7f7;
+	--drift-ui-header-bg: #f9fafb;
+	--drift-ui-success: #13744a;
+	--drift-ui-success-bg: #e7f4ed;
+	--drift-ui-warning: #8a4b00;
+	--drift-ui-warning-bg: #fdf1e1;
+	--drift-ui-error: #b0122c;
+	--drift-ui-error-bg: #fdeaed;
+	--drift-ui-radius: 10px;
+	--drift-ui-radius-sm: 6px;
+
+	max-width: 1100px;
+	padding-top: 8px;
+	color: var(--drift-ui-text);
+}
+
+.drift-ui--narrow {
+	max-width: 900px;
+}
+
+.drift-ui * {
+	box-sizing: border-box;
+}
+
+/* Header --------------------------------------------------------------- */
+
+.drift-ui-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 24px;
+	align-items: flex-start;
+	margin: 16px 0 24px;
+	padding: 26px 28px;
+	background: var(--drift-ui-header-bg);
+	border: 1px solid #e4e1d8;
+	border-left: 4px solid var(--drift-ui-accent);
+	border-radius: var(--drift-ui-radius);
+}
+
+.drift-ui-header__main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	min-width: 0;
+}
+
+.drift-ui-header__logo {
+	display: block;
+	width: 250px;
+	max-width: 100%;
+	height: auto;
+	margin-bottom: 16px;
+}
+
+/* Beats core's .wrap h1 sizing. */
+.drift-ui .drift-ui-header__title {
+	margin: 0 0 8px;
+	padding: 0;
+	font-size: 30px;
+	font-weight: 650;
+	line-height: 1.2;
+	letter-spacing: -1px;
+	color: var(--drift-ui-ink);
+}
+
+.drift-ui-header__lead {
+	max-width: 65ch;
+	margin: 0 0 8px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--drift-ui-muted);
+}
+
+.drift-ui-header__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 13px;
+}
+
+.drift-ui-header__links li {
+	margin: 0;
+}
+
+/* Pink on the off-white header fails AA contrast, so links stay black and
+ * hover/focus thickens the underline instead. */
+.drift-ui-header a {
+	font-weight: 600;
+	color: var(--drift-ui-ink);
+	text-decoration-color: var(--drift-ui-accent);
+	text-underline-offset: 3px;
+}
+
+.drift-ui-header a:hover,
+.drift-ui-header a:focus {
+	color: var(--drift-ui-ink);
+	text-decoration-thickness: 2px;
+}
+
+.drift-ui-header__meta {
+	display: flex;
+	flex: 0 0 auto;
+	flex-direction: column;
+	gap: 8px;
+	align-items: flex-end;
+}
+
+.drift-ui-version {
+	padding: 7px 10px;
+	font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	white-space: nowrap;
+	color: var(--drift-ui-text);
+	border: 1px solid #ccd1d5;
+	border-radius: var(--drift-ui-radius-sm);
+}
+
+/* Notices -------------------------------------------------------------- */
+
+.drift-ui .notice,
+.drift-ui div.updated,
+.drift-ui div.error {
+	margin: 0 0 20px;
+	border-radius: var(--drift-ui-radius-sm);
+}
+
+/* Cards ---------------------------------------------------------------- */
+
+.drift-ui-card {
+	margin: 0 0 24px;
+	padding: 26px 28px;
+	background: var(--drift-ui-surface);
+	border: 1px solid var(--drift-ui-line);
+	border-radius: var(--drift-ui-radius);
+}
+
+.drift-ui-card__head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 20px;
+	align-items: baseline;
+	justify-content: space-between;
+	margin: 0 0 8px;
+}
+
+.drift-ui .drift-ui-card__title,
+.drift-ui .drift-ui-card > h2 { /* Settings API section titles, printed as bare <h2>. */
+	margin: 0 0 8px;
+	padding: 0;
+	font-size: 19px;
+	line-height: 1.3;
+	letter-spacing: -0.3px;
+	color: var(--drift-ui-ink);
+}
+
+/* Several Settings API sections in one card: divide them. */
+.drift-ui .drift-ui-card > h2:not(:first-child) {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid var(--drift-ui-line-soft);
+}
+
+.drift-ui-card__head .drift-ui-card__title {
+	margin: 0;
+}
+
+.drift-ui-card__intro,
+.drift-ui-card > h2 + p { /* Settings API section descriptions. */
+	max-width: 70ch;
+	margin: 0 0 8px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--drift-ui-muted);
+}
+
+.drift-ui-card__footer {
+	margin: 20px -28px -26px;
+	padding: 16px 28px;
+	background: var(--drift-ui-subtle);
+	border-top: 1px solid var(--drift-ui-line-soft);
+	border-radius: 0 0 var(--drift-ui-radius) var(--drift-ui-radius);
+}
+
+/* Tables for settings (core .form-table) inside cards. */
+.drift-ui-card .form-table {
+	margin-top: 8px;
+}
+
+.drift-ui-card .form-table tr {
+	border-bottom: 1px solid var(--drift-ui-line-soft);
+}
+
+.drift-ui-card .form-table tr:last-of-type {
+	border-bottom: 0;
+}
+
+.drift-ui-card .form-table th {
+	padding: 14px 10px 14px 0;
+	font-weight: 500;
+	color: var(--drift-ui-text);
+}
+
+.drift-ui-card .form-table td {
+	padding: 10px;
+}
+
+/* Data tables (core .widefat). */
+.drift-ui .widefat {
+	border-color: var(--drift-ui-line);
+	border-radius: var(--drift-ui-radius-sm);
+	overflow: hidden;
+}
+
+.drift-ui .widefat thead th,
+.drift-ui .widefat thead td {
+	font-weight: 600;
+	color: var(--drift-ui-muted);
+	background: var(--drift-ui-subtle);
+}
+
+/* Form controls -------------------------------------------------------- */
+
+.drift-ui input[type="text"],
+.drift-ui input[type="password"],
+.drift-ui input[type="url"],
+.drift-ui input[type="email"],
+.drift-ui input[type="number"],
+.drift-ui input[type="search"],
+.drift-ui input[type="tel"],
+.drift-ui input[type="date"],
+.drift-ui input[type="datetime-local"],
+.drift-ui input[type="time"],
+.drift-ui select,
+.drift-ui textarea {
+	border-color: #8c8f94;
+	border-radius: var(--drift-ui-radius-sm);
+}
+
+.drift-ui textarea.code,
+.drift-ui textarea.drift-ui-code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 13px;
+}
+
+.drift-ui input:focus,
+.drift-ui select:focus,
+.drift-ui textarea:focus {
+	border-color: var(--drift-ui-ink);
+	outline: 2px solid transparent; /* Keeps a visible focus ring in forced-colours mode. */
+	box-shadow: 0 0 0 1px var(--drift-ui-ink);
+}
+
+.drift-ui input[type="checkbox"]:checked,
+.drift-ui input[type="radio"]:checked {
+	border-color: var(--drift-ui-ink);
+}
+
+.drift-ui input[type="radio"]:checked::before {
+	background-color: var(--drift-ui-ink);
+}
+
+/* Stack radio/checkbox groups one per line. */
+.drift-ui fieldset label {
+	display: block;
+	margin: 0 0 6px;
+}
+
+.drift-ui .description {
+	color: var(--drift-ui-muted);
+}
+
+.drift-ui code {
+	padding: 2px 5px;
+	font-size: 12px;
+	background: var(--drift-ui-subtle);
+	border-radius: 4px;
+}
+
+/* Switch-style checkbox. Opt in with class="drift-ui-toggle" on a checkbox
+ * that already has a proper <label>. */
+.drift-ui input[type="checkbox"].drift-ui-toggle {
+	position: relative;
+	width: 38px;
+	height: 22px;
+	margin: 0 8px 0 0;
+	vertical-align: middle;
+	background: #c3c4c7;
+	border: 0;
+	border-radius: 999px;
+	box-shadow: none;
+	transition: background-color 0.15s ease;
+	-webkit-appearance: none;
+	appearance: none;
+	cursor: pointer;
+}
+
+.drift-ui input[type="checkbox"].drift-ui-toggle::before {
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	background: #fff;
+	border-radius: 50%;
+	content: "";
+	transition: transform 0.15s ease;
+}
+
+.drift-ui input[type="checkbox"].drift-ui-toggle:checked {
+	background: var(--drift-ui-ink);
+}
+
+.drift-ui input[type="checkbox"].drift-ui-toggle:checked::before {
+	transform: translateX(16px);
+}
+
+.drift-ui input[type="checkbox"].drift-ui-toggle:focus-visible {
+	outline: 2px solid var(--drift-ui-accent);
+	outline-offset: 2px;
+	box-shadow: none;
+}
+
+.drift-ui input[type="checkbox"].drift-ui-toggle:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.drift-ui input[type="checkbox"].drift-ui-toggle,
+	.drift-ui input[type="checkbox"].drift-ui-toggle::before {
+		transition: none;
+	}
+}
+
+/* Buttons -------------------------------------------------------------- */
+
+.drift-ui .button {
+	border-radius: var(--drift-ui-radius-sm);
+}
+
+.drift-ui .button-primary {
+	color: #fff;
+	background: var(--drift-ui-ink);
+	border-color: var(--drift-ui-ink);
+}
+
+.drift-ui .button-primary:hover,
+.drift-ui .button-primary:focus {
+	color: #fff;
+	background: var(--drift-ui-accent-strong);
+	border-color: var(--drift-ui-accent-strong);
+}
+
+.drift-ui .button-primary:focus {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--drift-ui-ink);
+}
+
+.drift-ui .button-primary:disabled,
+.drift-ui .button-primary.disabled {
+	color: #a7aaad !important; /* Core disabled styles use !important. */
+	background: #f6f7f7 !important;
+	border-color: #dcdcde !important;
+}
+
+.drift-ui .button-secondary,
+.drift-ui .button:not(.button-primary):not(.button-link) {
+	color: var(--drift-ui-ink);
+	border-color: var(--drift-ui-ink);
+}
+
+.drift-ui .button-secondary:hover,
+.drift-ui .button:not(.button-primary):not(.button-link):hover {
+	color: var(--drift-ui-ink);
+	background: var(--drift-ui-subtle);
+	border-color: var(--drift-ui-ink);
+}
+
+.drift-ui .button:not(.button-primary):focus {
+	color: var(--drift-ui-ink);
+	border-color: var(--drift-ui-ink);
+	box-shadow: 0 0 0 1px var(--drift-ui-ink);
+}
+
+.drift-ui .submit {
+	margin: 0 0 24px;
+	padding: 0;
+}
+
+.drift-ui-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+/* Badges --------------------------------------------------------------- */
+
+.drift-ui-badge {
+	display: inline-block;
+	padding: 2px 9px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.6;
+	white-space: nowrap;
+	color: var(--drift-ui-muted);
+	background: var(--drift-ui-line-soft);
+	border: 1px solid currentColor;
+	border-radius: 999px;
+}
+
+.drift-ui-badge--success { color: var(--drift-ui-success); background: var(--drift-ui-success-bg); }
+.drift-ui-badge--warning { color: var(--drift-ui-warning); background: var(--drift-ui-warning-bg); }
+.drift-ui-badge--error { color: var(--drift-ui-error); background: var(--drift-ui-error-bg); }
+
+/* Status / diagnostics ------------------------------------------------- */
+
+.drift-ui-status {
+	display: grid;
+	grid-template-columns: minmax(140px, max-content) 1fr;
+	gap: 10px 24px;
+	margin: 12px 0 0;
+}
+
+.drift-ui-status dt {
+	font-weight: 500;
+	color: var(--drift-ui-muted);
+}
+
+.drift-ui-status dd {
+	margin: 0;
+	word-break: break-word;
+}
+
+/* Help / footer -------------------------------------------------------- */
+
+.drift-ui-help {
+	margin: 8px 0 24px;
+	padding: 16px 0 0;
+	font-size: 13px;
+	color: var(--drift-ui-muted);
+	border-top: 1px solid var(--drift-ui-line);
+}
+
+.drift-ui-help p {
+	margin: 0 0 6px;
+}
+
+/* Small screens -------------------------------------------------------- */
+
+@media (max-width: 782px) {
+	.drift-ui-header {
+		flex-direction: column;
+		padding: 20px 16px;
+	}
+
+	.drift-ui .drift-ui-header__title {
+		font-size: 25px;
+	}
+
+	.drift-ui-header__meta {
+		align-items: flex-start;
+	}
+
+	.drift-ui-card {
+		padding: 20px 16px;
+	}
+
+	.drift-ui-card__footer {
+		margin: 16px -16px -20px;
+		padding: 14px 16px;
+	}
+
+	.drift-ui-card .form-table th,
+	.drift-ui-card .form-table td {
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.drift-ui-status {
+		grid-template-columns: 1fr;
+		gap: 2px;
+	}
+
+	.drift-ui-status dd {
+		margin-bottom: 10px;
+	}
+}
+
+/* Print ---------------------------------------------------------------- */
+
+@media print {
+	.drift-ui-header {
+		display: none;
+	}
+}

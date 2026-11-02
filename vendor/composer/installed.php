@@ -1,20 +1,20 @@
 <?php return array(
     'root' => array(
-        'name' => 'bonsai-digital-collective/bonsai-gift-cards',
+        'name' => 'drift-creative-systems/drift-gift-cards',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '878992fcb9a87b47b5ede1ae74d4194c14d10576',
-        'type' => 'library',
+        'reference' => '6f9488919b0d6804c2af9efe7e652ebc54e5bb14',
+        'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => false,
     ),
     'versions' => array(
-        'bonsai-digital-collective/bonsai-gift-cards' => array(
+        'drift-creative-systems/drift-gift-cards' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '878992fcb9a87b47b5ede1ae74d4194c14d10576',
-            'type' => 'library',
+            'reference' => '6f9488919b0d6804c2af9efe7e652ebc54e5bb14',
+            'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,

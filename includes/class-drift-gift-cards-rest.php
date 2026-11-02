@@ -3,12 +3,12 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * REST routes backing the Blocks checkout "Have a gift card?" field
- * (assets/js/checkout-block.js). Thin wrappers around BGCP_Cart's static
+ * (assets/js/checkout-block.js). Thin wrappers around Drift_Gift_Cards_Cart's static
  * methods — no business logic lives here.
  */
-class BGCP_REST {
+class Drift_Gift_Cards_REST {
 
-	const NS = 'bgcp/v1';
+	const NS = 'drift-gift-cards/v1';
 
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
@@ -74,7 +74,7 @@ class BGCP_REST {
 	public static function verify_nonce( WP_REST_Request $request ) {
 		$nonce = $request->get_header( 'X-WP-Nonce' );
 		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-			return new WP_Error( 'bgcp_bad_nonce', __( 'Security check failed, please refresh and try again.', 'bgcp' ), array( 'status' => 403 ) );
+			return new WP_Error( 'drift_gift_cards_bad_nonce', __( 'Security check failed, please refresh and try again.', 'drift-gift-cards' ), array( 'status' => 403 ) );
 		}
 		return true;
 	}
@@ -85,11 +85,11 @@ class BGCP_REST {
 	 */
 	public static function rate_limited_public( WP_REST_Request $request ) {
 		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
-		$key = 'bgcp_balance_rl_' . md5( $ip );
+		$key = 'drift_gift_cards_balance_rl_' . md5( $ip );
 		$hits = (int) get_transient( $key );
 
 		if ( $hits >= 20 ) {
-			return new WP_Error( 'bgcp_rate_limited', __( 'Too many requests, please try again shortly.', 'bgcp' ), array( 'status' => 429 ) );
+			return new WP_Error( 'drift_gift_cards_rate_limited', __( 'Too many requests, please try again shortly.', 'drift-gift-cards' ), array( 'status' => 429 ) );
 		}
 
 		set_transient( $key, $hits + 1, MINUTE_IN_SECONDS );
@@ -106,37 +106,37 @@ class BGCP_REST {
 		try {
 			self::ensure_cart_session();
 
-			$result = BGCP_Cart::apply_code( $request->get_param( 'code' ) );
+			$result = Drift_Gift_Cards_Cart::apply_code( $request->get_param( 'code' ) );
 			if ( is_wp_error( $result ) ) {
 				return new WP_REST_Response( array( 'success' => false, 'message' => $result->get_error_message() ), 400 ); // phpcs:ignore
 			}
 
 			return new WP_REST_Response( array( 'success' => true, 'cards' => $result ), 200 );
 		} catch ( Exception $e ) {
-			error_log( 'BGCP REST apply() error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			return new WP_REST_Response( array( 'success' => false, 'message' => __( 'Something went wrong. Please try again.', 'bgcp' ) ), 500 );
+			error_log( 'Drift Gift Cards REST apply() error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			return new WP_REST_Response( array( 'success' => false, 'message' => __( 'Something went wrong. Please try again.', 'drift-gift-cards' ) ), 500 );
 		}
 	}
 
 	public static function remove( WP_REST_Request $request ) {
 		try {
-			$cards = BGCP_Cart::remove_code( $request->get_param( 'code' ) );
+			$cards = Drift_Gift_Cards_Cart::remove_code( $request->get_param( 'code' ) );
 			return new WP_REST_Response( array( 'success' => true, 'cards' => $cards ), 200 );
 		} catch ( Exception $e ) {
-			error_log( 'BGCP REST remove() error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			return new WP_REST_Response( array( 'success' => false, 'message' => __( 'Something went wrong. Please try again.', 'bgcp' ) ), 500 );
+			error_log( 'Drift Gift Cards REST remove() error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			return new WP_REST_Response( array( 'success' => false, 'message' => __( 'Something went wrong. Please try again.', 'drift-gift-cards' ) ), 500 );
 		}
 	}
 
 	public static function applied() {
-		return new WP_REST_Response( array( 'success' => true, 'cards' => BGCP_Cart::get_applied_cards() ), 200 );
+		return new WP_REST_Response( array( 'success' => true, 'cards' => Drift_Gift_Cards_Cart::get_applied_cards() ), 200 );
 	}
 
 	public static function balance( WP_REST_Request $request ) {
-		$card = BGCP_DB::get_card_by_code( $request->get_param( 'code' ) );
+		$card = Drift_Gift_Cards_DB::get_card_by_code( $request->get_param( 'code' ) );
 
 		if ( ! $card ) {
-			return new WP_REST_Response( array( 'success' => false, 'message' => __( "We couldn't find a gift card with that code.", 'bgcp' ) ), 404 ); // phpcs:ignore
+			return new WP_REST_Response( array( 'success' => false, 'message' => __( "We couldn't find a gift card with that code.", 'drift-gift-cards' ) ), 404 ); // phpcs:ignore
 		}
 
 		return new WP_REST_Response(

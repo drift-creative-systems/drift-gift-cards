@@ -10,12 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * can be enabled at once. Driven by WP-Cron; if the site's cron is
  * disabled/offloaded, the scheduled events still need firing by whatever
  * real cron runner is in use (see README), same caveat as the scheduled
- * gift card delivery in BGCP_Order.
+ * gift card delivery in Drift_Gift_Cards_Order.
  */
-class BGCP_Report {
+class Drift_Gift_Cards_Report {
 
-	const CRON_HOOK_WEEKLY  = 'bgcp_send_sales_report_weekly';
-	const CRON_HOOK_MONTHLY = 'bgcp_send_sales_report_monthly';
+	const CRON_HOOK_WEEKLY  = 'drift_gift_cards_send_sales_report_weekly';
+	const CRON_HOOK_MONTHLY = 'drift_gift_cards_send_sales_report_monthly';
 
 	public static function init() {
 		add_filter( 'cron_schedules', array( __CLASS__, 'register_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
@@ -24,13 +24,13 @@ class BGCP_Report {
 	}
 
 	public static function register_schedules( $schedules ) {
-		$schedules['bgcp_weekly']  = array(
+		$schedules['drift_gift_cards_weekly']  = array(
 			'interval' => WEEK_IN_SECONDS,
-			'display'  => __( 'Once Weekly (Gift Card Report)', 'bgcp' ),
+			'display'  => __( 'Once Weekly (Gift Card Report)', 'drift-gift-cards' ),
 		);
-		$schedules['bgcp_monthly'] = array(
+		$schedules['drift_gift_cards_monthly'] = array(
 			'interval' => 30 * DAY_IN_SECONDS,
-			'display'  => __( 'Once Monthly (Gift Card Report)', 'bgcp' ),
+			'display'  => __( 'Once Monthly (Gift Card Report)', 'drift-gift-cards' ),
 		);
 		return $schedules;
 	}
@@ -40,11 +40,11 @@ class BGCP_Report {
 	 * Called after Settings are saved; also safe to call any time.
 	 */
 	public static function reschedule() {
-		$emails      = BGCP_Settings::get_report_emails();
-		$frequencies = BGCP_Settings::get_report_frequencies();
+		$emails      = Drift_Gift_Cards_Settings::get_report_emails();
+		$frequencies = Drift_Gift_Cards_Settings::get_report_frequencies();
 
-		self::sync_schedule( self::CRON_HOOK_WEEKLY, 'bgcp_weekly', in_array( 'weekly', $frequencies, true ) && ! empty( $emails ) );
-		self::sync_schedule( self::CRON_HOOK_MONTHLY, 'bgcp_monthly', in_array( 'monthly', $frequencies, true ) && ! empty( $emails ) );
+		self::sync_schedule( self::CRON_HOOK_WEEKLY, 'drift_gift_cards_weekly', in_array( 'weekly', $frequencies, true ) && ! empty( $emails ) );
+		self::sync_schedule( self::CRON_HOOK_MONTHLY, 'drift_gift_cards_monthly', in_array( 'monthly', $frequencies, true ) && ! empty( $emails ) );
 	}
 
 	private static function sync_schedule( $hook, $recurrence, $should_be_scheduled ) {
@@ -66,7 +66,7 @@ class BGCP_Report {
 	}
 
 	private static function send_report( $frequency ) {
-		$emails = BGCP_Settings::get_report_emails();
+		$emails = Drift_Gift_Cards_Settings::get_report_emails();
 		if ( empty( $emails ) ) {
 			return;
 		}
@@ -74,23 +74,23 @@ class BGCP_Report {
 		$days  = 'monthly' === $frequency ? 30 : 7;
 		$since = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
 
-		$cards  = BGCP_DB::get_cards_since( $since );
+		$cards  = Drift_Gift_Cards_DB::get_cards_since( $since );
 		$totals = self::calculate_totals( $cards );
 		$file   = self::build_csv( $cards, $totals );
 
 		if ( ! $file ) {
-			error_log( 'BGCP: could not build gift card sales report CSV' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			error_log( 'Drift Gift Cards: could not build gift card sales report CSV' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			return;
 		}
 
 		$subject = sprintf(
 			/* translators: %s: site name */
-			__( 'Gift card sales report — %s', 'bgcp' ),
+			__( 'Gift card sales report — %s', 'drift-gift-cards' ),
 			get_bloginfo( 'name' )
 		);
 		$body    = sprintf(
 			/* translators: 1: number of gift cards, 2: number of days covered, 3: total sold, 4: total redeemed */
-			__( "%1\$d gift card(s) created in the last %2\$d days.\nTotal sold: %3\$s\nRedeemed so far (from those cards): %4\$s\nCSV attached.", 'bgcp' ),
+			__( "%1\$d gift card(s) created in the last %2\$d days.\nTotal sold: %3\$s\nRedeemed so far (from those cards): %4\$s\nCSV attached.", 'drift-gift-cards' ),
 			count( $cards ),
 			$days,
 			wp_strip_all_tags( wc_price( $totals['sold'] ) ),
@@ -100,7 +100,7 @@ class BGCP_Report {
 		$sent = wp_mail( $emails, $subject, $body, array(), array( $file ) );
 
 		if ( ! $sent ) {
-			error_log( 'BGCP: failed to send gift card sales report to ' . implode( ', ', $emails ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			error_log( 'Drift Gift Cards: failed to send gift card sales report to ' . implode( ', ', $emails ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		}
 
 		wp_delete_file( $file );
@@ -127,7 +127,7 @@ class BGCP_Report {
 	}
 
 	private static function build_csv( array $cards, array $totals ) {
-		$file = wp_tempnam( 'bgcp-sales-report' );
+		$file = wp_tempnam( 'drift-gift-cards-sales-report' );
 		if ( ! $file ) {
 			return false;
 		}
@@ -137,27 +137,27 @@ class BGCP_Report {
 			return false;
 		}
 
-		fputcsv( $handle, array( __( 'Total sold', 'bgcp' ), $totals['sold'] ) );
-		fputcsv( $handle, array( __( 'Total redeemed', 'bgcp' ), $totals['redeemed'] ) );
-		fputcsv( $handle, array( __( 'Outstanding balance', 'bgcp' ), round( $totals['sold'] - $totals['redeemed'], 2 ) ) );
+		fputcsv( $handle, array( __( 'Total sold', 'drift-gift-cards' ), $totals['sold'] ) );
+		fputcsv( $handle, array( __( 'Total redeemed', 'drift-gift-cards' ), $totals['redeemed'] ) );
+		fputcsv( $handle, array( __( 'Outstanding balance', 'drift-gift-cards' ), round( $totals['sold'] - $totals['redeemed'], 2 ) ) );
 		fputcsv( $handle, array() );
 
 		fputcsv(
 			$handle,
 			array(
-				__( 'Code', 'bgcp' ),
-				__( 'Status', 'bgcp' ),
-				__( 'Initial Amount', 'bgcp' ),
-				__( 'Balance', 'bgcp' ),
-				__( 'Recipient Name', 'bgcp' ),
-				__( 'Recipient Email', 'bgcp' ),
-				__( 'Purchaser Email', 'bgcp' ),
-				__( 'Message', 'bgcp' ),
-				__( 'Order ID', 'bgcp' ),
-				__( 'Paid Via', 'bgcp' ),
-				__( 'Expires At', 'bgcp' ),
-				__( 'Created At', 'bgcp' ),
-				__( 'Updated At', 'bgcp' ),
+				__( 'Code', 'drift-gift-cards' ),
+				__( 'Status', 'drift-gift-cards' ),
+				__( 'Initial Amount', 'drift-gift-cards' ),
+				__( 'Balance', 'drift-gift-cards' ),
+				__( 'Recipient Name', 'drift-gift-cards' ),
+				__( 'Recipient Email', 'drift-gift-cards' ),
+				__( 'Purchaser Email', 'drift-gift-cards' ),
+				__( 'Message', 'drift-gift-cards' ),
+				__( 'Order ID', 'drift-gift-cards' ),
+				__( 'Paid Via', 'drift-gift-cards' ),
+				__( 'Expires At', 'drift-gift-cards' ),
+				__( 'Created At', 'drift-gift-cards' ),
+				__( 'Updated At', 'drift-gift-cards' ),
 			)
 		);
 
@@ -174,7 +174,7 @@ class BGCP_Report {
 					$card->purchaser_email,
 					$card->message,
 					$card->order_id,
-					BGCP_Admin::payment_method_label( $card ),
+					Drift_Gift_Cards_Admin::payment_method_label( $card ),
 					$card->expires_at,
 					$card->created_at,
 					$card->updated_at,
