@@ -5,15 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Added
-- "Offer a printed gift card by post" setting (Gift Card Settings → Cards and pricing). Untick it to hide the printed card checkbox and postal address fields on gift card products. Also enforced server-side. On by default, so existing sites are unchanged.
-
-### Changed
-- Help text under the gift card product fields is now 14px. `gift-card.css` is now loaded on gift card product pages too.
-
 ## [1.0.0] - 2026-11-02
 
-Rebranded as **Drift: Gift Cards** by Drift Creative Systems, as a clean fork. Features are unchanged. Every stored name is new too, so this plugin doesn't read data written by the 1.x plugin it was forked from (it's a separate product). Entries below 1.0.0 are from that plugin.
+Rebranded as **Drift: Gift Cards** by Drift Creative Systems, as a clean fork. Features are the same apart from the two additions noted below. Every stored name is new too, so this plugin doesn't read data written by the 1.x plugin it was forked from (it's a separate product). Entries below 1.0.0 are from that plugin.
 
 ### Changed
 - Plugin folder and main file `drift-gift-cards/drift-gift-cards.php`, text domain `drift-gift-cards`.
@@ -23,9 +17,11 @@ Rebranded as **Drift: Gift Cards** by Drift Creative Systems, as a clean fork. F
 - Admin screens use the Drift admin design system with the Drift monogram and the Gift Cards emerald accent (`#10b981`; `#047857` under white text for AA).
 - Updates come from the public `drift-creative-systems/drift-gift-cards` repo, with no token needed. Release zips are built by `.github/workflows/release.yml`.
 - Composer autoloader has a fixed `DriftGiftCards` suffix so it never clashes with another plugin's.
+- Help text under the gift card product fields is now 14px. `gift-card.css` is now loaded on gift card product pages too.
 
 ### Added
 - Admin notice instead of a fatal error when the plugin is installed twice.
+- "Offer a printed gift card by post" setting (Gift Card Settings → Cards and pricing), on by default. Untick it to hide the printed card checkbox and postal address fields on gift card products. Also enforced server-side.
 - Copyright and company details (Drift Creative Systems Ltd, company number, registered office) in the wp-admin footer on the plugin's screens, the README and the main file header.
 
 ## [1.2.0] - 2026-09-30
